@@ -6,7 +6,6 @@ name: Maven Package
 on:
   release:
     types: [created]
-  workflow_dispatch: {}
 
 jobs:
   build:
@@ -30,6 +29,9 @@ jobs:
         run: mvn package
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+        run: |
+          # Set version to that of the release
+          mvn versions:set -DnewVersion=${{ github.event.release.tag_name }}
+          mvn deploy -DskipTests -s $GITHUB_WORKSPACE/settings.xml
         env:
           GITHUB_TOKEN: ${{ github.token }}
